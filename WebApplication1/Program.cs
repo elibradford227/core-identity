@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,13 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 //builder.Services.AddOpenApi();
 
+
+builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme)
+    .AddBearerToken(IdentityConstants.BearerScheme);
+builder.Services.AddIdentityCore<User>()
+    .AddEntityFrameworkStores<WebApp1DbContext>()
+    .AddApiEndpoints();
+
 builder.Services.AddAuthorization(options =>
 {
     var policy = new AuthorizationPolicyBuilder(IdentityConstants.ApplicationScheme, IdentityConstants.BearerScheme)
@@ -21,12 +29,6 @@ builder.Services.AddAuthorization(options =>
 
     options.DefaultPolicy = policy;
 });
-
-builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme)
-    .AddBearerToken(IdentityConstants.BearerScheme);
-builder.Services.AddIdentityCore<User>()
-    .AddEntityFrameworkStores<WebApp1DbContext>()
-    .AddApiEndpoints();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -60,6 +62,7 @@ app.UseAuthentication();
 app.MapControllers();
 
 
+
 app.MapGet("users/me", async (ClaimsPrincipal claims, WebApp1DbContext context) =>
 {
     string userId = claims.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
@@ -67,5 +70,6 @@ app.MapGet("users/me", async (ClaimsPrincipal claims, WebApp1DbContext context) 
     return await context.Users.FindAsync(userId);
 })
 .RequireAuthorization();
+
 
 app.Run();
