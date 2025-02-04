@@ -12,7 +12,8 @@ builder.Services.AddControllers();
 //builder.Services.AddOpenApi();
 
 builder.Services.AddAuthorization();
-builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme);
+builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme)
+    .AddBearerToken(IdentityConstants.BearerScheme);
 builder.Services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<WebApp1DbContext>()
     .AddApiEndpoints();
@@ -22,6 +23,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<WebApp1DbContext>(options =>
    options.UseNpgsql(builder.Configuration["WebappDbConnectionString"]));
+//builder.Services.AddNpgsql<WebApp1DbContext>(builder.Configuration["WebappDbConnectionString"]);
 
 var app = builder.Build();
 
