@@ -1,0 +1,3 @@
+DROP DATABASE IF EXISTS "WebApplication1";
+
+CREATE DATABASE "WebApplication1";
